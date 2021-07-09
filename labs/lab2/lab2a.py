@@ -32,8 +32,10 @@ MIN_CONTOUR_AREA = 30
 CROP_FLOOR = ((360, 0), (rc.camera.get_height(), rc.camera.get_width()))
 
 # Colors, stored as a pair (hsv_min, hsv_max)
-BLUE = ((90, 50, 50), (120, 255, 255))  # The HSV range for the color blue
+BLUE = ((88,245,199), (108,255,255))  # The HSV range for the color blue
 # TODO (challenge 1): add HSV ranges for other colors
+GREEN = ((35,43,46),(77,255,255))
+RED = ((0,245,212),(10,255,255))
 
 # >> Variables
 speed = 0.0  # The current speed of the car
@@ -67,7 +69,13 @@ def update_contour():
         image = rc_utils.crop(image, CROP_FLOOR[0], CROP_FLOOR[1])
 
         # Find all of the blue contours
-        contours = rc_utils.find_contours(image, BLUE[0], BLUE[1])
+
+        color = (BLUE,GREEN,RED)
+
+        for x in color:
+            contours = rc_utils.find_contours(image, x[0], x[1])
+            if len(contours) != 0:
+                break
 
         # Select the largest contour
         contour = rc_utils.get_largest_contour(contours, MIN_CONTOUR_AREA)
@@ -130,21 +138,18 @@ def update():
     update_contour()
 
     # Choose an angle based on contour_center
-    # If we could not find a contour, keep the previous angle
+
+    imgX = rc.camera.get_width()
+    
     if contour_center is not None:
-        # Current implementation: bang-bang control (very choppy)
-        # TODO (warmup): Implement a smoother way to follow the line
-        if contour_center[1] < rc.camera.get_width() / 2:
-            angle = -1
-        else:
-            angle = 1
+        angle = rc_utils.remap_range(contour_center[1],0,imgX,-1,1)
 
     # Use the triggers to control the car's speed
     forwardSpeed = rc.controller.get_trigger(rc.controller.Trigger.RIGHT)
     backSpeed = rc.controller.get_trigger(rc.controller.Trigger.LEFT)
     speed = forwardSpeed - backSpeed
 
-    rc.drive.set_speed_angle(speed, angle)
+    rc.drive.set_speed_angle(1, angle)
 
     # Print the current speed and angle when the A button is held down
     if rc.controller.is_down(rc.controller.Button.A):
