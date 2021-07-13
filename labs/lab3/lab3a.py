@@ -149,7 +149,7 @@ def update():
     # if farthest_pixel1 > 200 and center_distance != 0:
     #     safety = False
 
-    # rc.drive.set_speed_angle(speed, angle)
+    rc.drive.set_speed_angle(speed, angle)
 
 ########################################################################################
 # DO NOT MODIFY: Register start and update and begin execution
