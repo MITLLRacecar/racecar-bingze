@@ -38,6 +38,7 @@ RED = ((170,50,50),(10,255,255),"RED")
 speed = 0.0
 angle = 0.0
 
+time =0.0
 # Camera values.
 contour_center = None
 contour_area = 0
@@ -71,7 +72,7 @@ def start():
     global speed
     global angle
     global cur_color
-
+    global time
     # Variables.
     speed = 0.0
     angle = 0.0
@@ -157,6 +158,7 @@ def update():
     is pressed
     """
 
+    
     update_contour()
 
     color_img = rc.camera.get_color_image()
@@ -170,11 +172,12 @@ def update():
     global contour_distance
     global cone_counter
     global prev_color
-
+    global time
 
     # Variables.
     speed = 0.0
     angle = 0.0
+    time += rc.get_delta_time()
 
     color_img_x = rc.camera.get_width()
 
@@ -184,7 +187,7 @@ def update():
 
     if cone_counter == 12:
         angle = -1
-        speed = 0.3
+        speed = 1
     elif cone_counter == 11 and contour_distance > 130:
         angle = 0.3
         speed = 1
@@ -194,30 +197,33 @@ def update():
 
     else:
         if cur_color == 'BLUE':
-            
+        
             if contour_center is not None:
                 point = rc_utils.remap_range(contour_distance, 10, 300, color_img_x, color_img_x * 3 //4 , True)
-                speed = rc_utils.remap_range(contour_distance,30, 120,0.3,1,True,)
-                angle = rc_utils.remap_range(contour_center[1], point, color_img_x // 2 , 0 ,-0.6 ,True)
-                if contour_distance > 170:
-                    angle = -0.15
+                #speed = rc_utils.remap_range(contour_distance,30, 120,0.8,1,True,)
+                speed = 1
+                angle = rc_utils.remap_range(contour_center[1], point, color_img_x // 2 , 0 ,-0.62 ,True)
+                if contour_distance > 175:
+                    angle = -0.16
             else:
                 angle = 0.32
-                speed = 0.9
+                speed = 1
         
         elif cur_color == 'RED':
             if contour_center is not None:
                 point = rc_utils.remap_range(contour_distance, 50, 300, 0, color_img_x // 2, True)
-                speed = rc_utils.remap_range(contour_distance,30, 120,0.3,1,True,)
-                angle = rc_utils.remap_range(contour_center[1], point, color_img_x //2 , 0 ,0.6 ,True)
-                if contour_distance > 170:
-                    angle = 0.15
+                #speed = rc_utils.remap_range(contour_distance,30, 120,0.7,1,True,)
+                speed = 1
+                angle = rc_utils.remap_range(contour_center[1], point, color_img_x //2 , 0 ,0.62 ,True)
+                if contour_distance > 175:
+                    angle = 0.16
             else:
                 angle = -0.32
-                speed = 0.9
+                speed = 1
     
+    #print(cone_counter)
     print(cone_counter)
-    
+
     rc.drive.set_speed_angle(speed,angle)
 ########################################################################################
 # DO NOT MODIFY: Register start and update and begin execution
