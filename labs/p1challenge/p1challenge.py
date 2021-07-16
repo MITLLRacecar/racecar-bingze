@@ -198,7 +198,7 @@ def update():
             if contour_center is not None:
                 point = rc_utils.remap_range(contour_distance, 10, 300, color_img_x, color_img_x * 3 //4 , True)
                 speed = rc_utils.remap_range(contour_distance,30, 120,0.3,1,True,)
-                angle = rc_utils.remap_range(contour_center[1], point, color_img_x // 2 , 0 ,-0.65 ,True)
+                angle = rc_utils.remap_range(contour_center[1], point, color_img_x // 2 , 0 ,-0.6 ,True)
                 if contour_distance > 170:
                     angle = -0.15
             else:
@@ -209,7 +209,7 @@ def update():
             if contour_center is not None:
                 point = rc_utils.remap_range(contour_distance, 50, 300, 0, color_img_x // 2, True)
                 speed = rc_utils.remap_range(contour_distance,30, 120,0.3,1,True,)
-                angle = rc_utils.remap_range(contour_center[1], point, color_img_x //2 , 0 ,0.65 ,True)
+                angle = rc_utils.remap_range(contour_center[1], point, color_img_x //2 , 0 ,0.6 ,True)
                 if contour_distance > 170:
                     angle = 0.15
             else:
