@@ -29,6 +29,21 @@ rc = racecar_core.create_racecar()
 FRONT_WINDOW = (-10, 10)
 REAR_WINDOW = (170, 190)
 
+MIN_STOP_DISTANCE = 20  # cm
+MAX_STOP_DISTANCE = 170  # cm
+ALPHA = 0.2  # Amount to use current_speed when updating cur_speed
+
+# Boundaries of the crop window used to only consider objects in front of the car
+
+
+# Amount to increase stop distance (cm) per speed (cm/s) squared
+STOP_DISTANCE_SCALE = 40.0 / 10000
+
+# slow_distance / stop_distance
+SLOW_DISTANCE_RATIO = 1.5
+
+# >> Variables
+
 ########################################################################################
 # Functions
 ########################################################################################
@@ -61,19 +76,28 @@ def update():
     After start() is run, this function is run every frame until the back button
     is pressed
     """
+
+    
     # Use the triggers to control the car's speed
     rt = rc.controller.get_trigger(rc.controller.Trigger.RIGHT)
     lt = rc.controller.get_trigger(rc.controller.Trigger.LEFT)
-    speed = rt - lt
-
+    
     # Calculate the distance in front of and behind the car
     scan = rc.lidar.get_samples()
     _, forward_dist = rc_utils.get_lidar_closest_point(scan, FRONT_WINDOW)
     _, back_dist = rc_utils.get_lidar_closest_point(scan, REAR_WINDOW)
-
-    # TODO (warmup): Prevent the car from hitting things in front or behind it.
-    # Allow the user to override safety stop by holding the left or right bumper.
-
+    
+    if not rc.controller.is_down(rc.controller.Button.RB):
+        if 60 < forward_dist < MAX_STOP_DISTANCE:
+            rt = rc_utils.clamp(rt, 0, 0.3)
+        elif MIN_STOP_DISTANCE < forward_dist < 60:
+            rt = 0
+    
+        if 60 < back_dist < MAX_STOP_DISTANCE:
+            lt = rc_utils.clamp(lt, 0, 0.3)
+        elif MIN_STOP_DISTANCE < back_dist < 60:
+            lt = 0
+    speed = rt - lt
     # Use the left joystick to control the angle of the front wheels
     angle = rc.controller.get_joystick(rc.controller.Joystick.LEFT)[0]
 
@@ -89,7 +113,6 @@ def update():
 
     # Display the current LIDAR scan
     rc.display.show_lidar(scan)
-
 
 ########################################################################################
 # DO NOT MODIFY: Register start and update and begin execution
